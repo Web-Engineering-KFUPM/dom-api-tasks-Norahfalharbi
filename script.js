@@ -19,7 +19,11 @@ inside the <p> element with id="t1-msg".
 💡 Hint:
 document.getElementById("t1-msg").innerHTML = "Hello, World!";
 */
- 
+ // Ensure DOM is ready before touching elements
+document.addEventListener("DOMContentLoaded", function () {
+  // code that accesses the DOM
+  document.getElementById("t1-msg").innerHTML = "Hello, World!";
+});
 
 /*  
 =======================================
@@ -40,8 +44,11 @@ button.addEventListener("click", function () {
     // change text here
 });
 */
- 
-
+const button = document.getElementById("t2-btn");
+button.addEventListener("click", function () {
+    // change text here
+    document.getElementById("t2-status").innerHTML = "You clicked the button!";
+});
 /*  
 =======================================
 TODO3: Inspiring Quote Board
@@ -68,6 +75,23 @@ Use:
 data.content   // the quote text
 data.author    // the author
 */
+const button1 = document.getElementById("t3-loadQuote").addEventListener("click", function (){
+  fetch("https://dummyjson.com/quotes/random")
+    .then(function (response) {
+      if (!response.ok) {
+        throw new Error("HTTP " + response.status);
+      }
+      return response.json();
+    })
+    .then(function (data) {
+     document.getElementById("t3-quote").innerHTML = data.quote;
+      document.getElementById("t3-author").innerHTML = "- " + data.author;
+    })
+    .catch(function (err) {
+      console.log("Error")
+    })
+});
+
  
 
 /*  
@@ -94,3 +118,33 @@ data.main.temp      → temperature (°C)
 data.main.humidity  → humidity (%)
 data.wind.speed     → wind speed (m/s)
 */
+const wxBtn = document.getElementById("t4-loadWx");
+const tempEl = document.getElementById("t4-temp");
+const humEl = document.getElementById("t4-hum");
+const windEl = document.getElementById("t4-wind");
+
+wxBtn.addEventListener("click", function () {
+ const base  = "https://api.openweathermap.org/data/2.5/weather";
+ const city  = "Dammam";
+ const units = "metric";
+ const key   = "d51f2f00c3b137ccfd135bd8f9dd50aa";
+ const url   = `${base}?q=${encodeURIComponent(city)}&appid=${key}&units=${units}`;
+ fetch(url)
+   .then(function (response) {
+     if (!response.ok) {
+       throw new Error("HTTP " + response.status);
+     }
+     return response.json();
+   })
+   .then(function (data) {
+     tempEl.textContent = data.main.temp + " °C";
+     humEl.textContent = data.main.humidity + " %";
+     windEl.textContent = data.wind.speed + " m/s";
+   })
+   .catch(function () {
+     tempEl.textContent = "—";
+     humEl.textContent = "—";
+     windEl.textContent = "—";
+   });
+});
+
